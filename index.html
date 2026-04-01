@@ -35,7 +35,7 @@ body::before { content:''; position:fixed; inset:0; z-index:9990; pointer-events
 
 /* ── SIDE DOTS ── */
 #side-nav { position:fixed; right:28px; top:50%; transform:translateY(-50%); z-index:400; display:flex; flex-direction:column; gap:14px; }
-.snav-dot { width:10px; height:10px; border-radius:50%; background:rgba(201,168,76,.28); border:none; cursor:none; transition:background .3s,transform .3s; position:relative; }
+.snav-dot { width:6px; height:6px; border-radius:50%; background:rgba(201,168,76,.28); border:none; cursor:none; transition:background .3s,transform .3s; position:relative; }
 .snav-dot::after { content:attr(data-label); position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:.62rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); white-space:nowrap; opacity:0; transition:opacity .2s; pointer-events:none; font-family:'Josefin Sans',sans-serif; }
 .snav-dot:hover::after { opacity:1; }
 .snav-dot.active { background:var(--gold); transform:scale(1.65); }
@@ -61,7 +61,7 @@ nav.main-nav { position:fixed; top:0; left:0; right:0; z-index:500; display:flex
 /* ── DRAWER ── */
 .mob-drawer { position:fixed; inset:0; z-index:550; background:rgba(8,8,8,.97); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; transform:translateX(100%); transition:transform .4s cubic-bezier(.4,0,.2,1); }
 .mob-drawer.open { transform:translateX(0); }
-.mob-drawer a { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:300; letter-spacing:.15em; color:var(--off-white); text-decoration:none; text-transform:uppercase; transition:color .2s; }
+.mob-drawer a { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:300; letter-spacing:.15em; color:var(--off-white); text-decoration:none; text-transform:uppercase; transition:color .2s; }
 .mob-drawer a:hover { color:var(--gold); }
 .mob-drawer .mob-cta { border:1px solid var(--gold); color:var(--gold); font-size:1rem; padding:14px 36px; font-family:'Josefin Sans',sans-serif; font-weight:300; letter-spacing:.2em; margin-top:8px; }
 
@@ -205,10 +205,10 @@ nav.main-nav { position:fixed; top:0; left:0; right:0; z-index:500; display:flex
 
 /* ── MOBILE ── */
 @media (max-width:900px) {
-  html,body { overflow:auto; }
+  html,body { overflow-x:hidden; overflow-y:auto; }
   #scroll-container { position:static; overflow:visible; }
   #scroll-track { transform:none!important; }
-  .panel { height:auto; min-height:100svh; overflow:visible; }
+  .panel { height:auto; min-height:100svh; overflow:hidden; }
   .ptc { opacity:1!important; transform:none!important; }
   nav.main-nav { padding:16px 20px; }
   .nav-links { display:none; }
@@ -217,13 +217,35 @@ nav.main-nav { position:fixed; top:0; left:0; right:0; z-index:500; display:flex
   .about-inner,.contact-inner { grid-template-columns:1fr; padding:60px 24px; gap:32px; }
   .about-visual { display:none; }
   .rooms-inner { padding:48px 16px; }
-  .rooms-grid { grid-template-columns:repeat(2,1fr); overflow-x:auto; }
+  .rooms-grid { grid-template-columns:repeat(2,1fr); }
   .amen-grid { grid-template-columns:repeat(2,1fr); }
   .amenities-inner,.reviews-inner { padding:48px 16px; }
   .reviews-grid { grid-template-columns:1fr 1fr; grid-template-rows:none; }
-  .hero-btns { flex-direction:column; align-items:center; }
+  /* Hero mobile: compact spacing, prevent overflow */
+  .hero-content { padding:80px 20px 60px; justify-content:center; height:auto; min-height:100svh; box-sizing:border-box; overflow:hidden; }
+  .hero-eyebrow { font-size:.58rem; letter-spacing:.2em; margin-bottom:16px; white-space:normal; text-align:center; }
+  .hero-title { font-size:clamp(2.4rem,15vw,4rem); margin-bottom:6px; }
+  .hero-title .line2 { font-size:.5em; letter-spacing:.25em; }
+  .hero-sub { font-size:.7rem; line-height: 1.5;; letter-spacing:.1em; margin:16px 0 28px; }
+  .hero-btns { flex-direction:column; align-items:center; gap:12px; }
+  .btn-gold,.btn-ghost { padding:12px 28px; font-size:.72rem; width:200px; text-align:center; }
+  .orb-1,.orb-2 { display:none; }
+  /* Drawer close button */
+  .mob-drawer-close {
+    position:absolute; top:24px; right:24px;
+    width:40px; height:40px; background:none;
+    border:1px solid rgba(201,168,76,.3); border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--gold); font-size:1.2rem; line-height:1;
+    transition:background .2s;
+  }
+  .mob-drawer-close:hover { background:rgba(201,168,76,.1); }
 }
-@media (max-width:600px) { .amen-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px) {
+  .amen-grid { grid-template-columns:repeat(2,1fr); }
+  .reviews-grid { grid-template-columns:1fr; }
+  .rooms-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
@@ -254,6 +276,7 @@ nav.main-nav { position:fixed; top:0; left:0; right:0; z-index:500; display:flex
 </nav>
 
 <div class="mob-drawer" id="mobDrawer">
+  <button class="mob-drawer-close" id="mobClose">✕</button>
   <a href="#" class="mob-link" data-section="0">Trang Chủ</a>
   <a href="#" class="mob-link" data-section="1">Về Chúng Tôi</a>
   <a href="#" class="mob-link" data-section="2">Phòng Nghỉ</a>
@@ -580,8 +603,7 @@ document.querySelectorAll('[data-section]').forEach(el => {
   el.addEventListener('click', e => {
     e.preventDefault();
     goTo(+el.dataset.section);
-    document.getElementById('mobBtn').classList.remove('open');
-    document.getElementById('mobDrawer').classList.remove('open');
+    closeMob();
   });
 });
 
@@ -619,7 +641,11 @@ document.querySelectorAll('a,button,.room-card').forEach(el=>{
 // ══════════════════════════════════
 const mobBtn    = document.getElementById('mobBtn');
 const mobDrawer = document.getElementById('mobDrawer');
-mobBtn.addEventListener('click', () => { mobBtn.classList.toggle('open'); mobDrawer.classList.toggle('open'); });
+const mobClose  = document.getElementById('mobClose');
+function openMob()  { mobBtn.classList.add('open');    mobDrawer.classList.add('open');    document.body.style.overflow='hidden'; }
+function closeMob() { mobBtn.classList.remove('open'); mobDrawer.classList.remove('open'); document.body.style.overflow=''; }
+mobBtn.addEventListener('click', () => mobDrawer.classList.contains('open') ? closeMob() : openMob());
+if (mobClose) mobClose.addEventListener('click', closeMob);
 
 
 // ══════════════════════════════════
